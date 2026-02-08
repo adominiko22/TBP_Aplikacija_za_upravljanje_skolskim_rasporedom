@@ -51,7 +51,7 @@ school-schedule/
 ├── run_local.sh
 ├── .env.example
 ├── .gitignore
-└── README.md
+
 ```
 
 ### Opis glavnih komponenti
