@@ -315,6 +315,8 @@ Projekt uključuje skriptu `run_local.sh` koja automatizira:
 
 ### Pokretanje skripte
 
+Nakon pozicioniranja u mapu projekta `school-schedule` pokreću se sljedeće dvije naredbe:
+
 ```bash
 chmod +x run_local.sh
 ./run_local.sh
