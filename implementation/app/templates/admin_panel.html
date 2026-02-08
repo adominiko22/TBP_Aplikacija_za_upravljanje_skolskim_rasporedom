@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>Administratorski panel</h1>
+</div>
+
+<div class="split">
+  <div class="card">
+    <h2>Izmijeni postojeći raspored</h2>
+    <form method="post" action="{{ url_for('admin_upsert') }}">
+      <div class="form-grid">
+        <div>
+          <label>Razred</label>
+          <select name="class_id" required>
+            {% for c in classes %}
+              <option value="{{ c.id }}">{{ c.school_year }} — {{ c.grade_level }}.{{ c.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label>Dan 1-5 (1-ponedjeljak, 5-petak) </label>
+          <input type="number" name="day_of_week" min="1" max="5" required />
+        </div>
+
+        <div>
+          <label>Sat (1-7)</label>
+          <input type="number" name="lesson_no" min="1" max="7" required />
+        </div>
+
+        <div>
+          <label>Predmet</label>
+          <select name="subject_id" required>
+            {% for s in subjects %}
+              <option value="{{ s.id }}">{{ s.code }} — {{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label>Profesor/ica</label>
+          <select name="teacher_id" required>
+            {% for t in teachers %}
+              <option value="{{ t.id }}">{{ t.full_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label>Učionica</label>
+          <select name="classroom_id" required>
+            {% for r in classrooms %}
+              <option value="{{ r.id }}">{{ r.code }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <button class="btn" type="submit">Spremi promjenu</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Ukloni sat iz rasporeda</h2>
+
+    <form method="post" action="{{ url_for('admin_delete') }}" style="margin-top:12px;">
+      <div class="form-grid">
+        <div>
+          <label>Razred</label>
+          <select name="class_id" required>
+            {% for c in classes %}
+              <option value="{{ c.id }}">{{ c.school_year }} — {{ c.grade_level }}.{{ c.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label>Dan (1-5)</label>
+          <input type="number" name="day_of_week" min="1" max="5" required />
+        </div>
+
+        <div>
+          <label>Sat (1-7)</label>
+          <input type="number" name="lesson_no" min="1" max="7" required />
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <button class="btn" type="submit">Ukloni</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

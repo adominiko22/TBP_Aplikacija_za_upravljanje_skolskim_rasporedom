@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gimnazija Metković - raspored sati</title>
+  <style>
+    :root{
+      --bg: #FFFFE0;          
+      --card: #FFFFFF;        
+      --accent: #FFF0F5;      
+      --text: #000000;
+      --border: rgba(0,0,0,.10);
+      --shadow: 0 10px 25px rgba(0,0,0,.08);
+      --radius: 16px;
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 400px at 20% 0%, var(--accent), transparent 60%),
+        radial-gradient(900px 400px at 80% 10%, rgba(255,240,245,.65), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px 16px 48px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 16px;
+      background:rgba(255,255,255,.8);
+      backdrop-filter: blur(10px);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      position:sticky;
+      top:16px;
+      z-index:10;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      line-height:1.1;
+    }
+    .brand-title{font-weight:800; letter-spacing:.2px;}
+    .brand-sub{font-size:13px; opacity:.75;}
+
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .nav a{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      text-decoration:none;
+      color:var(--text);
+      background:var(--accent);
+      border:1px solid var(--border);
+      transition: transform .08s ease, box-shadow .08s ease;
+    }
+    .nav a:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(0,0,0,.08);
+    }
+
+    .card{
+      background:rgba(255,255,255,.9);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px 18px;
+      margin-top:18px;
+    }
+
+    h1{margin:0 0 10px; font-size:28px;}
+    h2{margin:14px 0 10px; font-size:18px;}
+    p{margin:8px 0;}
+    .muted{opacity:.75;}
+
+    .flash{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.85);
+    }
+    .flash b{margin-right:6px;}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.85);
+    }
+    th, td{
+      padding:12px 10px;
+      border-bottom:1px solid var(--border);
+      border-right:1px solid var(--border);
+      vertical-align:top;
+    }
+    th:last-child, td:last-child{border-right:none;}
+    tr:last-child td, tr:last-child th{border-bottom:none;}
+    th{
+      background:var(--accent);
+      font-weight:700;
+      text-align:left;
+      white-space:nowrap;
+    }
+    td{
+      background:rgba(255,255,255,.9);
+    }
+
+    .cell{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      padding:10px;
+      border-radius:12px;
+      background:rgba(255,240,245,.35);
+      border:1px solid rgba(0,0,0,.06);
+    }
+    .cell .code{font-weight:800; letter-spacing:.3px;}
+    .cell .meta{font-size:13px; opacity:.85;}
+    .empty{
+      opacity:.55;
+      font-size:14px;
+      padding:10px;
+    }
+
+    form{margin:0;}
+    .form-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      align-items:end;
+    }
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:6px;
+      opacity:.9;
+    }
+    input, select{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:white;
+      color:var(--text);
+      outline:none;
+    }
+    input:focus, select:focus{
+      box-shadow:0 0 0 4px rgba(255,240,245,.8);
+      border-color:rgba(0,0,0,.18);
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:var(--accent);
+      color:var(--text);
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .08s ease, box-shadow .08s ease;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(0,0,0,.08);
+    }
+    .btn-secondary{
+      background:white;
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
+    }
+    @media (max-width: 900px){
+      .split{grid-template-columns:1fr;}
+      .form-grid{grid-template-columns:1fr;}
+      .topbar{position:static;}
+    }
+
+    ul{margin:0; padding-left:18px;}
+    li{margin:6px 0;}
+    .pill{
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,240,245,.75);
+      border:1px solid var(--border);
+      font-size:13px;
+      font-weight:600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-title">Gimnazija Metković</div>
+        <div class="brand-sub">Raspored sati</div>
+      </div>
+
+      <div class="nav">
+        <a href="{{ url_for('index') }}"> Početna</a>
+        <a href="{{ url_for('admin_login') }}">Admin</a>
+        {% if session.get('is_admin') %}
+          <a href="{{ url_for('admin_panel') }}">Panel</a>
+          <a href="{{ url_for('admin_logout') }}">Odjava</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat,msg in messages %}
+          <div class="flash"><b>{{ cat }}</b> {{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>
+

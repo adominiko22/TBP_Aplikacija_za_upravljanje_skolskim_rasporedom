@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>Raspored sati</h1>
+  <p class="muted">Pregled rasporeda sati po razredu ili po profesoru.</p>
+</div>
+
+<div class="split">
+  <div class="card">
+    <h2>Po razredu</h2>
+    <ul>
+      {% for c in classes %}
+        <li>
+          <a href="{{ url_for('view_class', class_id=c.id) }}">
+            {{ c.school_year }} — {{ c.grade_level }}.{{ c.label }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Po profesoru</h2>
+
+    {% for subject, teachers in subjects_with_teachers.items() %}
+      <div style="margin-bottom:14px;">
+        <div class="pill" style="margin-bottom:6px;">
+          {{ subject }}
+        </div>
+
+        <ul>
+          {% for t in teachers %}
+            <li>
+              <a href="{{ url_for('view_teacher', teacher_id=t.id) }}">
+                {{ t.name }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
