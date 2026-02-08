@@ -142,3 +142,191 @@ Korišteni za izradu korisničkog sučelja i dinamičko generiranje web stranica
 
 ### Ubuntu Linux
 Operacijski sustav korišten za razvoj i testiranje aplikacije.
+
+---
+
+## Pokretanje projekta iz ZIP arhive (Ubuntu Linux)
+
+Ovaj odjeljak opisuje postupak pokretanja projekta iz ZIP arhive, bez potrebe za korištenjem GitHub repozitorija. Upute pretpostavljaju Linux okruženje (Ubuntu) i služe za lokalno pokretanje aplikacije i baze podataka.
+
+---
+
+### Preduvjeti
+
+Na sustavu moraju biti instalirani sljedeći alati:
+
+- PostgreSQL (server i `psql` klijent)
+- Python 3.12+
+- `pip`
+- `python3-venv`
+
+Primjer instalacije na Ubuntu sustavu:
+
+```bash
+sudo apt update
+sudo apt install -y postgresql postgresql-client python3 python3-venv python3-pip
+```
+
+Provjera instalacija:
+
+```bash
+psql --version
+python3 --version
+pip --version
+```
+
+Projekt je razvijen i testiran s:
+- PostgreSQL 16.11
+- Python 3.12.3
+- pip 24.0
+
+---
+
+### 1) Raspakiravanje ZIP arhive
+
+Pretpostavlja se da se projekt nalazi u arhivi `school-schedule.zip`.
+
+```bash
+unzip school-schedule.zip
+cd school-schedule
+```
+
+Provjeriti da direktorij sadrži mape `app/` i `sql/` te konfiguracijske datoteke.
+
+---
+
+### 2) Konfiguracija varijabli okruženja
+
+U root direktoriju projekta potrebno je pripremiti `.env` datoteku.
+
+Ako već ne postoji:
+
+```bash
+cp .env.example .env
+nano .env
+```
+
+Minimalni sadržaj `.env` datoteke:
+
+```env
+DATABASE_URL=postgresql://school_app:school_app_pw@localhost:5432/school_db
+ADMIN_PIN=1234
+SECRET_KEY=dev-secret-change-me
+```
+
+---
+
+### 3) Python virtualno okruženje i ovisnosti
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+---
+
+### 4) Inicijalizacija PostgreSQL baze podataka
+
+#### 4.1 Kreiranje korisnika i baze (jednokratno)
+
+Na Ubuntu sustavima PostgreSQL koristi sistemskog korisnika `postgres`.
+
+```bash
+sudo -u postgres psql
+```
+
+U PostgreSQL konzoli izvršiti:
+
+```sql
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'school_app') THEN
+    CREATE ROLE school_app LOGIN PASSWORD 'school_app_pw';
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'school_db') THEN
+    CREATE DATABASE school_db OWNER school_app;
+  END IF;
+END $$;
+
+GRANT ALL PRIVILEGES ON DATABASE school_db TO school_app;
+```
+
+Izlazak iz konzole:
+
+```sql
+\q
+```
+
+---
+
+#### 4.2 Inicijalizacija sheme i podataka
+
+Projekt sadrži glavnu SQL skriptu za reset i inicijalizaciju baze:
+
+```bash
+PGPASSWORD=school_app_pw psql -h localhost -U school_app -d school_db -f sql/00_reset_all.sql
+```
+
+Ova skripta:
+- briše postojeću shemu (ako postoji)
+- kreira tablice, indekse, poglede i okidače
+- puni bazu inicijalnim podatcima
+
+---
+
+### 5) Pokretanje Flask aplikacije
+
+U root direktoriju projekta, s aktiviranim virtualnim okruženjem:
+
+```bash
+python3 -m flask --app app.app run --debug
+```
+
+Aplikacija je dostupna na adresi:
+
+```
+http://127.0.0.1:5000/
+```
+
+Administratorski dio:
+```
+http://127.0.0.1:5000/admin
+```
+
+PIN za prijavu definiran je u `.env` datoteci (`ADMIN_PIN`).
+
+---
+
+## Automatizirano pokretanje (skripta)
+
+Projekt uključuje skriptu `run_local.sh` koja automatizira:
+
+- pripremu `.env` datoteke
+- kreiranje Python virtualnog okruženja
+- instalaciju Python ovisnosti
+- kreiranje PostgreSQL korisnika i baze
+- inicijalizaciju baze podataka
+- pokretanje Flask aplikacije
+
+### Pokretanje skripte
+
+```bash
+chmod +x run_local.sh
+./run_local.sh
+```
+
+Skripta može zatražiti administratorsku (`sudo`) lozinku radi kreiranja PostgreSQL baze i korisnika.
+
+---
+
+### Napomena
+
+Ako PostgreSQL korisnik i baza već postoje, moguće je preskočiti ručne korake inicijalizacije i koristiti isključivo automatiziranu skriptu.
+
+Sve promjene rasporeda u sustavu se vremenski verzioniraju, a poslovna pravila (kurikulum i konflikti) provode se na razini baze podataka pomoću okidača.
+
