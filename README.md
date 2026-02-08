@@ -48,6 +48,7 @@ school-schedule/
 ├── schema.sql
 ├── seed.sql
 ├── requirements.txt
+├── run_local.sh
 ├── .env
 ├── .env.example
 ├── .gitignore
