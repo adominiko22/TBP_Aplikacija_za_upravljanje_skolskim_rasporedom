@@ -1,0 +1,43 @@
+1. Preduvjeti (Ubuntu/Debian)
+sudo apt update
+sudo apt install -y postgresql postgresql-client python3 python3-venv python3-pip
+
+2. BRZO POKRETANJE (AUTOMATIZIRANO)
+unzip school-schedule.zip
+cd school-schedule
+chmod +x run_local.sh
+./run_local.sh
+
+*Napomena: Skripta radi sve - od baze do pokretanja Flask-a.
+
+
+3. RUČNO POKRETANJE 
+# A) Okruženje i ovisnosti
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# B) Konfiguracija (.env)
+cp .env.example .env
+# Urediti po potrebi: nano .env
+
+# C) PostgreSQL Baza (Kao 'postgres' user)
+sudo -u postgres psql
+
+  CREATE ROLE school_app LOGIN PASSWORD 'school_app_pw';
+  CREATE DATABASE school_db OWNER school_app;
+  GRANT ALL PRIVILEGES ON DATABASE school_db TO school_app;
+  \q
+
+# D) Inicijalizacija sheme i podataka
+PGPASSWORD=school_app_pw psql -h localhost -U school_app -d school_db -f sql/00_reset_all.sql
+
+# E) Pokretanje Flask aplikacije
+python3 -m flask --app app.app run --debug
+
+
+4. PRISTUP APLIKACIJI
+URL:       http://127.0.0.1:5000
+Admin:     http://127.0.0.1:5000/admin
+Admin PIN: (Definiran u .env, default: 1234)
+
