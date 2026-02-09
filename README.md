@@ -50,7 +50,9 @@ school-schedule/
 ├── requirements.txt
 ├── run_local.sh
 ├── .env.example
+├── .env
 ├── .gitignore
+└── upute_za_pokretanje.txt
 
 ```
 
